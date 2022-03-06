@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Dashboard</title>
+	<link rel="stylesheet" type="text/css" href="webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+	<style type="text/css">
+		h2 {
+			text-align: center;
+		}
+
+		table {
+			background-color: aliceblue;
+		}
+
+		.balanceinfo {
+			margin-top: 80px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div th:insert="fragments/header :: header"></div>
+	<button onclick="logout()" type="button" id="logout"
+								class="btn btn-primary">Logout</button>
+
+
+	<div class="container">
+		<!--<div th:insert="fragments/menu :: menu"></div>-->
+		<div class="dashbord_content">
+			<div class="container">
+				<h2>Dashboard</h2>
+				<form>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="form-group">
+								<label>Search Keyword:</label> <input type="text" class="form-control" id="keyword">
+							</div>
+							<button onclick="getSearch()" type="button" id="search"
+								class="btn btn-primary">Search</button>
+							<button onclick="resetbtn()" type="button" id="reset"
+								class="btn btn-primary">Reset</button>
+							
+						</div>
+
+					</div>
+				</form>
+
+
+
+
+
+				<div class="row">
+
+					<!--<div class="container">
+						<h2>Panels with Contextual Classes</h2>
+						<div class="panel-group">
+
+							<div class="col-md-4">
+								<div class="panel panel-primary" style="margin-right: 5px; margin-bottom: 2px;">
+									<div class="panel-heading">Panel with panel-primary class</div>
+									<div class="panel-body">Panel Content</div>
+								</div>
+							</div>
+
+						</div>
+					</div>-->
+
+					<div id="dashboardInfo">
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+
+	<div th:insert="fragments/footer :: footer"></div>
+
+	<script type="text/javascript" src="webjars/jquery/2.2.4/jquery.min.js"></script>
+	<script type="text/javascript" src="js/dashboard.js"></script>
+
+</body>
+
+</html>

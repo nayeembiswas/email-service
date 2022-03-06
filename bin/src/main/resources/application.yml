@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: auth-api
+server:
+  port: 8082
+
+---
+spring:
+ datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:4352/sample_login?createIfNotExists=true
+    username: 
+    password: 
+    #data: classpath:/component-module-submodule.sql,classpath:/role.sql,classpath:/permissions.sql,classpath:/user-role.sql,classpath:/role_permission.sql,classpath:/url-data.sql,classpath:/api-endpoints.sql,classpath:/navigations.sql
+    initialization-mode: always
+  # JPA properties
+ jpa:
+    hibernate:
+      ddl-auto: update # When you launch the application for the first time - switch "none" at "create"
+    show-sql: false
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    generate-ddl: true
