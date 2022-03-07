@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 /**
- * @Project   com.example.demo.entity
+ * @Project   email-service
  * @Author    Md. Nayeemul Islam
  * @Since     Mar 6, 2022
  * @version   1.0.0

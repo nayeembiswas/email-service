@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
@@ -34,16 +35,17 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.auth.exception.FileNotFoundException;
 import com.example.demo.auth.exception.FileStorageException;
 import com.example.demo.constants.MessageConstants;
+import com.example.demo.entity.EmailAttachment;
 import com.example.demo.entity.EmailOtherRecipients;
 import com.example.demo.entity.EmailRecipients;
+import com.example.demo.repository.EmailAttachmentRepository;
 import com.example.demo.repository.EmailOtherRecipientsRepository;
 import com.example.demo.repository.EmailsRecipientsRepository;
 import com.example.demo.repository.EmailsRepository;
 import com.example.demo.request.EmailsRequest;
 import com.example.demo.response.CommonResponse;
 import com.example.demo.utill.CommonUtils;
-//import com.example.demo.utill.FileStorageProperties;
-
+import com.example.demo.utill.FileStorageProperties;
 
 /**
  * @Project email-service
@@ -65,6 +67,9 @@ public class EmailsServiceImpl implements EmailsService {
 	private EmailOtherRecipientsRepository otherRecipientsRepository;
 
 	@Autowired
+	private EmailAttachmentRepository attachmentRepository;
+
+	@Autowired
 	private EmailsRepository emailsRepository;
 
 	@Autowired
@@ -72,22 +77,20 @@ public class EmailsServiceImpl implements EmailsService {
 
 	@Autowired
 	private CommonUtils commonUtils;
-	
-//	private final Path productLoc;
-//	
-//	
-//	public EmailsServiceImpl(FileStorageProperties properties) {
-//		this.productLoc = Paths.get(properties.getUploadDir()).toAbsolutePath().normalize();
-//
-//		try {
-//			Files.createDirectories(this.productLoc);
-//		} catch (Exception e) {
-//
-//			throw new FileStorageException("Could not Create the Directory", e);
-//
-//		}
-//	}
-	
+
+	private final Path fileLocation;
+
+	public EmailsServiceImpl(FileStorageProperties properties) {
+		this.fileLocation = Paths.get(properties.getUploadDir()).toAbsolutePath().normalize();
+
+		try {
+			Files.createDirectories(this.fileLocation);
+		} catch (Exception e) {
+
+			throw new FileStorageException("Could not Create the Directory", e);
+
+		}
+	}
 
 	private static final int DELAY_SECOND = 10;
 
@@ -96,6 +99,7 @@ public class EmailsServiceImpl implements EmailsService {
 		EmailsRequest saveEntity = new EmailsRequest();
 		List<EmailRecipients> recipients = new ArrayList<>();
 		List<EmailOtherRecipients> otherRecipients = new ArrayList<>();
+		List<EmailAttachment> attachments = new ArrayList<>();
 //		request.getEmails().setIsDeleted(false);
 
 		saveEntity.setEmails(emailsRepository.save(request.getEmails()));
@@ -114,8 +118,16 @@ public class EmailsServiceImpl implements EmailsService {
 			recipients.add(recipientsRepository.save(m));
 		});
 
+		request.getAttachments().forEach(m -> {
+			m.setEmails(saveEntity.getEmails());
+//			m.setIsDeleted(false);
+			attachments.add(attachmentRepository.save(m));
+		});
+
 		saveEntity.setRecipients(recipients);
 		saveEntity.setOtherRecipients(otherRecipients);
+		saveEntity.setAttachments(attachments);
+//		saveEntity.setAttachments(attachmentRepository.saveAll(request.getAttachments()));
 
 		return commonUtils.generateSuccessResponse(saveEntity, MessageConstants.SAVE_MESSAGE);
 	}
@@ -136,6 +148,7 @@ public class EmailsServiceImpl implements EmailsService {
 			request.setEmails(m.getEmails());
 			request.setRecipients(null);
 			request.setOtherRecipients(otherRecipientsRepository.findByEmailsId(m.getEmails().getId()));
+			request.setAttachments(attachmentRepository.findByEmailsId(m.getEmails().getId()));
 
 			try {
 //				mailSender.send(constructCustomEmail(request, m.getEmailAddr()));
@@ -148,11 +161,11 @@ public class EmailsServiceImpl implements EmailsService {
 				recipientsRepository.save(m);
 			} catch (MailSendException e) {
 				// TODO: handle exception
+				e.printStackTrace();
 			}
 
 		});
 	}
-
 
 	public MimeMessagePreparator constructCustomEmail(EmailsRequest request, String to) {
 
@@ -184,33 +197,51 @@ public class EmailsServiceImpl implements EmailsService {
 			}
 		};
 	}
-	
-	public void sendUserRegisterEmail(EmailsRequest request, String to){
-	    MimeMessagePreparator preparator = new MimeMessagePreparator() {
-	        public void prepare(MimeMessage mimeMessage) throws Exception {
+
+	public void sendUserRegisterEmail(EmailsRequest request, String to) {
+		MimeMessagePreparator preparator = new MimeMessagePreparator() {
+			public void prepare(MimeMessage mimeMessage) throws Exception {
+
+				MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true);
+				message.setSubject(request.getEmails().getSubject());
+				message.setTo(to);
+				message.setFrom(new InternetAddress("shopnobaazmailsender@gmail.com"));
+				message.setText(request.getEmails().getBody(), request.getEmails().getIsHtml());
 
 //	        	MultipartFile image = loadInlineAttachment("image.png", "image/png");
-	        	
-	        	File image2 = new File("D:/webx/project/email-service/file/image.png");
-		        	
-	        	File pdf2 = new File("D:/webx/project/email-service/file/Fatema-Resume.pdf");
-	        	
-	            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true);
-	            message.setSubject(request.getEmails().getSubject());
-	            message.setTo(to);
-	            message.setFrom(new InternetAddress("shopnobaazmailsender@gmail.com"));
-	            message.setText(request.getEmails().getBody());
-
 //	            final InputStreamSource imageSource = new ByteArrayResource(image.getBytes());
 //	            message.addInline(image.getName(), imageSource,  image.getContentType());
-	            
-//	            final InputStreamSource pdfSource = new ByteArrayResource(pdf.getBytes());
-	            message.addInline(image2.getName(), image2);
-	            message.addAttachment(pdf2.getName(), pdf2);
 
-	           }
-	    };
-	    mailSender.send(preparator);
+//	            File image2 = new File("D:/webx/project/email-service/file/image.png");
+//	        	File pdf2 = new File("D:/webx/project/email-service/file/Fatema-Resume.pdf");
+//	            message.addInline(image2.getName(), image2);
+//	            message.addAttachment(pdf2.getName(), pdf2);
+
+				if (!request.getAttachments().isEmpty()) {
+					request.getAttachments().forEach(m -> {
+						File file = new File(fileLocation.toString() + "/" + m.getFileUrl());
+						if (m.getType().equalsIgnoreCase("inline")) {
+							try {
+								message.addInline(file.getName(), file);
+							} catch (MessagingException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+						} else {
+							try {
+								message.addAttachment(file.getName(), file);
+							} catch (MessagingException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					});
+				}
+
+			}
+		};
+		mailSender.send(preparator);
 	}
 
 //	private MultipartFile loadInlineAttachment(String fileName, String contentType) {

@@ -17,6 +17,13 @@ import org.springframework.data.annotation.LastModifiedDate;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
+/**
+ * @Project   email-service
+ * @Author    Md. Nayeemul Islam
+ * @Since     Mar 6, 2022
+ * @version   1.0.0
+ */
+
 
 @Data
 @Entity
@@ -43,6 +50,9 @@ public class Emails implements Serializable {
 	
 	@Column(name = "STORE_ID")
 	private UUID store;
+	
+	@Column(name = "IS_HTML", columnDefinition = "boolean default true")
+	private Boolean isHtml;
 
 	@Column(columnDefinition = "varchar(100)", nullable = false, updatable = false)
 	private UUID createdBy = UUID.randomUUID();

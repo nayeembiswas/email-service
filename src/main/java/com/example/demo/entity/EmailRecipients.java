@@ -19,6 +19,12 @@ import org.springframework.data.annotation.LastModifiedDate;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
+/**
+ * @Project   email-service
+ * @Author    Md. Nayeemul Islam
+ * @Since     Mar 6, 2022
+ * @version   1.0.0
+ */
 
 @Data
 @Entity

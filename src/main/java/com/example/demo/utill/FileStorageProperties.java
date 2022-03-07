@@ -1,29 +1,26 @@
+
+package com.example.demo.utill;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+import lombok.Getter;
+import lombok.Setter;
+
 /**
-// * @Since Jan 25, 2021
-// * @Author Nayeemul Islam
-// * @Project drug-product-microservice-resourse-server
-// * @Package net.ati.product.common.utils
-// */
-//package com.example.demo.utill;
-//
-//import org.springframework.boot.context.properties.ConfigurationProperties;
-//import org.springframework.stereotype.Component;
-//
-//import lombok.Getter;
-//import lombok.Setter;
-//
-///**
-// * @author Nayeem
-// *
-// */
-//
-//@Getter
-//@Setter
-//@Component
-//@ConfigurationProperties(prefix = "file")
-//public class FileStorageProperties {
-//    private String uploadDir;
-//    
-//    
-//    
-//}
+ * @Project   email-service
+ * @Author    Md. Nayeemul Islam
+ * @Since     Mar 7, 2022
+ * @version   1.0.0
+ */
+
+@Getter
+@Setter
+@Component
+@ConfigurationProperties(prefix = "file")
+public class FileStorageProperties {
+    private String uploadDir;
+    
+    
+    
+}
