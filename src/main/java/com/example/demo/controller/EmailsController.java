@@ -3,15 +3,15 @@ package com.example.demo.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.request.EmailsRequest;
-import com.example.demo.response.CommonResponse;
+import com.example.demo.response.AppResponse;
 import com.example.demo.service.EmailsService;
-import com.example.demo.utill.CommonUtils;
 
 import lombok.AllArgsConstructor;
 
@@ -26,15 +26,13 @@ public class EmailsController {
 	@Autowired
 	private EmailsService service;
 	
-	@Autowired
-	private CommonUtils commonUtils;
 	
 	@PostMapping(value = "/save")
-    public CommonResponse save(@RequestBody EmailsRequest alertsRequest){
+    public AppResponse save(@RequestBody EmailsRequest request){
 		try {
-    		return commonUtils.generateSuccessResponse(service.save(alertsRequest));
+    		return AppResponse.build(HttpStatus.OK).body(service.save(request));
 		} catch (Exception e) {
-			return commonUtils.generateErrorResponse(e);
+			return AppResponse.build(HttpStatus.INTERNAL_SERVER_ERROR).message(e.getMessage());
 		}
     }
 

@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.request.EmailsRequest;
-import com.example.demo.response.CommonResponse;
 
 /**
  * @Project   email-service
@@ -12,5 +11,5 @@ import com.example.demo.response.CommonResponse;
 
 public interface EmailsService {
 	
-	public CommonResponse save(EmailsRequest alertsRequest);
+	public EmailsRequest save(EmailsRequest request);
 }
